@@ -1,0 +1,29 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: Java
+  Date: 2020-05-13
+  Time: 오후 11:11
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<div id="footer">
+    동의대학교 소프트웨어공학과에서<br/>
+    만든 문(DOOR) 뚫기 시스템...<br>
+    <img src="img/loading.gif" alt="그림"/>
+    <br>
+    <hr style="color:red">
+    공지사항 <br>
+    <strong>사이트 개발자도 4학년 학생이라 과제가 너무 밀려서 시간 날 때마다 기능을 업데이트 할 예정입니다...</strong><br>
+    <strong>교수님들 제발 출석인정 과제 좀 제발 적당히 내주셨으면 좋겠습니다...</strong><br>
+    아래 링크를 클릭하면 해당 사이트의 내용과 기능을 볼 수 있습니다.<br>
+    <a href="crawler_explain.html">사이트 소개</a><br>
+    <a href="features.html">새로 추가된 게시물 보기 기능</a><br>
+    URLEncoding 관련 이슈를 해결하여 자동로그인이 가능하도록 수정했습니다...<br>
+    추가할 기능들
+    <br>
+    1) 과제 가장 많이 밀린 사람 랭킹 시스템 <br>
+    기타 필요한 기능, 개선 사항 제보받습니다. 대부분 다 구현할 자신은 있습니다...<br>
+    카카오톡 오픈 채팅방 : https://open.kakao.com/o/sBYAEGbc <br>
+    추후 도메인을 구매할까 고민중입니다...<br>
+</div>
