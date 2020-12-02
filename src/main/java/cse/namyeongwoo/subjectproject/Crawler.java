@@ -1,5 +1,6 @@
 package cse.namyeongwoo.subjectproject;
 
+import net.sf.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,8 +30,8 @@ public class Crawler {
     private static final String COURSE_NOTIFY = "http://door.deu.ac.kr/BBS/Board/List/CourseNotice?cNo=";
     private static final String COURSE_REFERENCE = "http://door.deu.ac.kr/BBS/Board/List/CourseReference?cNo=";
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36";
-    private Map<String, String> cookies = new HashMap<>();
-    private StringBuilder stringBuilder = new StringBuilder("");
+    private final Map<String, String> cookies = new HashMap<>();
+    private JSONObject result = new JSONObject();
 
     public Crawler(String id, String password) {
         this.id = id;
@@ -39,11 +40,11 @@ public class Crawler {
     }
 
     public void start() {
+
         try {
             if (id == null || id.equals("") || password == null || password.equals("")) {
                 throw new IllegalArgumentException();
             }
-            System.out.println(new java.util.Date());
             Connection.Response loginFormResponse = Jsoup.connect(FORM_URL).header("User-Agent", USER_AGENT).execute();
             cookies.putAll(loginFormResponse.cookies());
             cookies.put("Language", "KOR");
@@ -56,7 +57,6 @@ public class Crawler {
                     .method(Connection.Method.POST)
                     .data("ssid", "30").execute();
             cookies.putAll(sessionResponse.cookies());
-            //System.out.println(loginServlet.parse());
             Connection.Response loginActionResponse = Jsoup.connect(ACTION_URL).header("User-Agent", USER_AGENT).header("Accept", "*/*")
                     .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3")
                     .ignoreContentType(true)
@@ -105,7 +105,7 @@ public class Crawler {
                 businessPage.data(input.attr("name"), input.attr("value"));
                 hashtable.put(input.attr("name"), input.attr("value"));
             }
-            Connection.Response businessResponse = businessPage.method(Connection.Method.POST).execute();
+            businessPage.method(Connection.Method.POST).execute();
 
             Connection.Response authResponse = Jsoup.connect(CHECK_AUTH_URL).header("User-Agent", USER_AGENT)
                     .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
@@ -122,7 +122,7 @@ public class Crawler {
             for (Element element : secondFormElement.select("input")) {
                 hashtable.put(element.attr("name"), element.attr("value"));
             }
-            Connection.Response loginServletResponse = Jsoup.connect(LOGIN_SERVLET_URL).header("User-Agent", USER_AGENT)
+            Jsoup.connect(LOGIN_SERVLET_URL).header("User-Agent", USER_AGENT)
                     .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
                     .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3")
                     .ignoreContentType(true)
@@ -134,7 +134,7 @@ public class Crawler {
                     .data("ssid", hashtable.get("ssid"))
                     .method(Connection.Method.POST)
                     .execute();
-            Connection.Response agentProc = Jsoup.connect(AGENT_PROC_URL)
+            Jsoup.connect(AGENT_PROC_URL)
                     .header("User-Agent", USER_AGENT)
                     .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
                     .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3")
@@ -194,6 +194,8 @@ public class Crawler {
                         .cookies(cookies).execute();
                 Document courseReferenceDocument = courseReferenceResponse.parse();
                 Elements courseNotifyElement = courseNotifyResponseDocument.select("tbody").eq(3);
+
+
                 stringBuilder.append(subject.getSubjectName());
                 stringBuilder.append("<br>");
                 stringBuilder.append("<button onclick=\"document.getElementById('hiddenContent").append(nth).append("').style.display=(document.getElementById('hiddenContent").append(nth).append("').style.display=='block') ? 'none' : 'block';\">공지사항</button>\n");
@@ -229,7 +231,9 @@ public class Crawler {
             stringBuilder.append("</p>");
             stringBuilder.append(tableMaker.getGonjiList());
         } catch (IllegalArgumentException ex) {
-            stringBuilder = new StringBuilder("<h1>아이디랑 비번이 틀린 것 같습니다. 확인해보세요.</h1>");
+            result = new JSONObject();
+            result
+                    stringBuilder = new StringBuilder("<h1>아이디랑 비번이 틀린 것 같습니다. 확인해보세요.</h1>");
             stringBuilder.append("<br>");
             stringBuilder.append("5초 후 자동으로 메인화면으로 돌아갑니다...");
             stringBuilder.append("<br>");
@@ -247,10 +251,11 @@ public class Crawler {
             System.err.println(new java.util.Date().toString() + " " + e.getMessage());
             start();
         }
+
     }
 
-    public StringBuilder getStringBuilder() {
-        return stringBuilder;
+    public JSONObject getResult() {
+        return result;
     }
 
     public Map<String, String> getCookies() {
