@@ -17,24 +17,10 @@ public class CrawlingServlet extends HttpServlet {
 
         String password = request.getParameter("password");
         String id = request.getParameter("userId");
-        String loginChk = request.getParameter("loginChk");
         try (PrintWriter out = response.getWriter()) {
-            out.println("<script src=\"https://code.jquery.com/jquery-3.5.1.min.js\" integrity=\"sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=\" crossorigin=\"anonymous\"></script>\n" +
-                    "");
             Crawler crawler = new Crawler(id, password);
             crawler.start();
-            out.println("<script>");
-            crawler.getCookies().forEach((k, v) -> out.println(String.format("document.cookie = \"%s=%s; path=/\";", k, v)));
-            if (crawler.isSuccess() && loginChk != null && loginChk.equals("true")) {
-                out.println(String.format("document.cookie = \"%s=%s; path=/\";", "userId", request.getParameter("userId")));
-                out.println(String.format("document.cookie = \"%s=%s; path=/\";", "password", request.getParameter("password")));
-                System.out.println("자동로그인 사용함 : " + new Date() + "\nuserId : " + id);
-            } else {
-                System.out.println("자동로그인 사용 안 함 : " + new Date() + "\nuserId : " + id);
-            }
-            out.println("</script>");
-            out.println(crawler.getStringBuilder().toString());
-
+            out.println(crawler.getResult().toString());
         }
     }
 
