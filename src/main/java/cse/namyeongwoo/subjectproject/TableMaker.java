@@ -71,9 +71,7 @@ public class TableMaker {
             }
         }
 
-        TableElement tableElement = new TableElement(header, recordList.toArray(new String[0]));
-
-        return tableElement;
+        return new TableElement(header, recordList.toArray(new String[0]));
     }
 
     private String appendNotYetList() {
