@@ -14,10 +14,7 @@ public class ResultServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = request.getParameter("url");
-        String homeworkNumber = request.getParameter("HomeworkNo");
-        if(homeworkNumber!=null&&!homeworkNumber.equals("")){
-            url+="&HomeworkNo="+homeworkNumber;
-        }
+
         System.out.println(url);
         Cookie[] cookies = request.getCookies();
         ResultPageMaker resultPageMaker = new ResultPageMaker(url,cookies);

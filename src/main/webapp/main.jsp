@@ -25,9 +25,9 @@
             // 여기서 비/눈은 비와 눈이 섞여 오는 것을 의미 (진눈개비)
             out.println(getWeather.ob.now);
             if (getWeather.ob.now != null) {
-                if (getWeather.ob.now.equals("3") || getWeather.ob.now.equals("7")) {%> 
+                if (getWeather.ob.now.equals("3") || getWeather.ob.now.equals("7")) {%>
 
-        <script src="https://tistory3.daumcdn.net/tistory/941717/skin/images/jquery.min.js" type="text/javascript"></script> 
+        <script src="https://tistory3.daumcdn.net/tistory/941717/skin/images/jquery.min.js" type="text/javascript"></script>
         <script src="https://tistory3.daumcdn.net/tistory/941717/skin/images/snowfall.jquery.js" type="text/javascript"></script>
         <script>
             $(document).ready(function () {
@@ -51,15 +51,15 @@
         <style>
             #topButton {position: fixed; right: 2%; bottom: 50px; display: none; z-index: 999;}
 
-            @font-face { 
-                font-family: 'MapoFlowerIsland'; 
-                src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/MapoFlowerIslandA.woff') format('woff'); 
-                font-weight: normal; 
-                font-style: normal; 
+            @font-face {
+                font-family: 'MapoFlowerIsland';
+                src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/MapoFlowerIslandA.woff') format('woff');
+                font-weight: normal;
+                font-style: normal;
             }
 
             *, *::before, *::after {
-                box-sizing: border-box; 
+                box-sizing: border-box;
                 margin: 0;
                 padding: 0;
             }
@@ -69,7 +69,7 @@
                 border-bottom: 1px dashed #fff;
             }
 
-            
+
 
             /* info */
             .info {
@@ -115,8 +115,8 @@
                 font-size: 12px;
                 transition: all 0.2s;
             }
-            
-            
+
+
 
             .info.right a:hover {
                 background: #fff;
@@ -214,8 +214,9 @@
         <div class="bs-docs-section clearfix">
             <div class="row">
                 <div class="col-xs-12">
+
                     <div class="page-header" style="text-align:right;">
-                        <h5 onclick="location.href = '#'">Login</h5>
+                        <h5 onclick="window.location='login.jsp'">Login</h5>
                     </div>
                     <div class="page-header" style="display: inline;">
                         <center><h1 id="navbars" onclick="location.href = 'index.jsp'">Homework Calendar</h1><center>
@@ -259,10 +260,10 @@
                                     </nav>
                                 </div>
                                 <!-- Navbar
-                               ================================================== 끝--> 
+                               ================================================== 끝-->
 
                                 <!-- jumbotron
-                                ================================================== -->  
+                                ================================================== -->
                                 <br />
                                 <div class="jumbotron">
                                     <div class="slider-wrap">
@@ -274,22 +275,22 @@
                                             <div class="slider"><img src="./images/5.jpg" alt="이미지5" style=" width: 1065px; height: 250px"></div>
                                         </div>
                                     </div>
-                                    
+
                                     <script>
                                         let sliderWrap = document.querySelector(".slider-wrap");
                                         let sliderImg = document.querySelector(".slider-img");
                                         let slider = document.querySelectorAll(".slider");
-                                        
+
                                         let currentIndex = 0;
                                         let sliderCount = slider.length;
-                                        
+
                                         console.log(slider[0]);
                                         setInterval(() => {
                                             let nextIndex = (currentIndex + 1) % sliderCount;
-                                            
+
                                             slider[currentIndex].style.opacity = "0";
                                             slider[nextIndex].style.opacity = "1";
-                                            
+
                                             currentIndex = nextIndex;
                                         }, 2000);
                                     </script>
@@ -297,7 +298,7 @@
                                 </div>
 
                                 <!-- jumbotron
-                                ================================================== 끝--> 
+                                ================================================== 끝-->
 
                                 <!-- 학사일정
                                   ================================================== -->
