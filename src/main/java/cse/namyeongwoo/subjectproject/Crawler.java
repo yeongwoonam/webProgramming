@@ -1,5 +1,7 @@
 package cse.namyeongwoo.subjectproject;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,8 +31,8 @@ public class Crawler {
     private static final String COURSE_NOTIFY = "http://door.deu.ac.kr/BBS/Board/List/CourseNotice?cNo=";
     private static final String COURSE_REFERENCE = "http://door.deu.ac.kr/BBS/Board/List/CourseReference?cNo=";
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36";
-    private Map<String, String> cookies = new HashMap<>();
-    private StringBuilder stringBuilder = new StringBuilder("");
+    private final Map<String, String> cookies = new HashMap<>();
+    private JSONArray resultArray;
 
     public Crawler(String id, String password) {
         this.id = id;
@@ -39,11 +41,11 @@ public class Crawler {
     }
 
     public void start() {
+
         try {
             if (id == null || id.equals("") || password == null || password.equals("")) {
                 throw new IllegalArgumentException();
             }
-            System.out.println(new java.util.Date());
             Connection.Response loginFormResponse = Jsoup.connect(FORM_URL).header("User-Agent", USER_AGENT).execute();
             cookies.putAll(loginFormResponse.cookies());
             cookies.put("Language", "KOR");
@@ -56,7 +58,6 @@ public class Crawler {
                     .method(Connection.Method.POST)
                     .data("ssid", "30").execute();
             cookies.putAll(sessionResponse.cookies());
-            //System.out.println(loginServlet.parse());
             Connection.Response loginActionResponse = Jsoup.connect(ACTION_URL).header("User-Agent", USER_AGENT).header("Accept", "*/*")
                     .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3")
                     .ignoreContentType(true)
@@ -105,7 +106,7 @@ public class Crawler {
                 businessPage.data(input.attr("name"), input.attr("value"));
                 hashtable.put(input.attr("name"), input.attr("value"));
             }
-            Connection.Response businessResponse = businessPage.method(Connection.Method.POST).execute();
+            businessPage.method(Connection.Method.POST).execute();
 
             Connection.Response authResponse = Jsoup.connect(CHECK_AUTH_URL).header("User-Agent", USER_AGENT)
                     .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
@@ -122,7 +123,7 @@ public class Crawler {
             for (Element element : secondFormElement.select("input")) {
                 hashtable.put(element.attr("name"), element.attr("value"));
             }
-            Connection.Response loginServletResponse = Jsoup.connect(LOGIN_SERVLET_URL).header("User-Agent", USER_AGENT)
+            Jsoup.connect(LOGIN_SERVLET_URL).header("User-Agent", USER_AGENT)
                     .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
                     .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3")
                     .ignoreContentType(true)
@@ -134,7 +135,7 @@ public class Crawler {
                     .data("ssid", hashtable.get("ssid"))
                     .method(Connection.Method.POST)
                     .execute();
-            Connection.Response agentProc = Jsoup.connect(AGENT_PROC_URL)
+            Jsoup.connect(AGENT_PROC_URL)
                     .header("User-Agent", USER_AGENT)
                     .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
                     .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3")
@@ -162,7 +163,7 @@ public class Crawler {
             Elements links = subjectsElements.select("a");
 
             TableMaker tableMaker = new TableMaker();
-            int nth = 1;
+            resultArray = new JSONArray();
             for (Element element : links) {
                 Subject subject = new Subject(element.text(), element.toString().split("'")[1]);
                 Connection.Response courseHomeworkStudentListResponse = Jsoup.connect(COURSE_HOMEWORK_STUDENT_LIST + subject.getSubjectCode())
@@ -194,19 +195,42 @@ public class Crawler {
                         .cookies(cookies).execute();
                 Document courseReferenceDocument = courseReferenceResponse.parse();
                 Elements courseNotifyElement = courseNotifyResponseDocument.select("tbody").eq(3);
-                stringBuilder.append(subject.getSubjectName());
-                stringBuilder.append("<br>");
-                stringBuilder.append("<button onclick=\"document.getElementById('hiddenContent").append(nth).append("').style.display=(document.getElementById('hiddenContent").append(nth).append("').style.display=='block') ? 'none' : 'block';\">공지사항</button>\n");
-                stringBuilder.append("<br>");
-                stringBuilder.append("<div id=\"hiddenContent").append(nth).append("\" style=\"display: none;\">");
-                stringBuilder.append(tableMaker.makeTable(courseNotifyElement, 1));
-                stringBuilder.append("</div>");
+                JSONObject subjectObject = new JSONObject();
+                subjectObject.put("subjectName", subject.getSubjectName());
+                JSONObject gongjiObject = new JSONObject();
+                //stringBuilder.append(subject.getSubjectName());
+                //stringBuilder.append("<br>");
+                //stringBuilder.append("<button onclick=\"document.getElementById('hiddenContent").append(nth).append("').style.display=(document.getElementById('hiddenContent").append(nth).append("').style.display=='block') ? 'none' : 'block';\">공지사항</button>\n");
+                //stringBuilder.append("<br>");
+                //stringBuilder.append("<div id=\"hiddenContent").append(nth).append("\" style=\"display: none;\">");
+                //stringBuilder.append(tableMaker.makeTable(courseNotifyElement, 1));
+                TableElement tableElement = tableMaker.makeTable(courseNotifyElement, 1);
+                JSONArray theadArray = new JSONArray();
+                for (String thead : tableElement.gettHeads()) {
+                    theadArray.add(thead);
+                }
+                JSONArray recordArray = new JSONArray();
+                for (String record : tableElement.getRecords()) {
+                    recordArray.add(record);
+                }
+                gongjiObject.put("thead", theadArray);
+                gongjiObject.put("record", recordArray);
+                subjectObject.put("gongji", gongjiObject);
                 Elements courseHomeworkStudentListElement = courseHomeworkStudentListDocument.select("div.form_table").select("table.tbl_type").select("tbody");
-                stringBuilder.append("<br>");
-                stringBuilder.append("과제");
-                stringBuilder.append("<br>");
-                stringBuilder.append(tableMaker.makeTable(courseHomeworkStudentListElement, 2));
-                stringBuilder.append("<br>");
+                JSONObject homeworkObject = new JSONObject();
+                JSONArray homeworkTheadArray = new JSONArray();
+                JSONArray homeworkRecordArray = new JSONArray();
+                TableElement homeworkElement = tableMaker.makeTable(courseHomeworkStudentListElement, 2);
+                for (String thead : homeworkElement.gettHeads()) {
+                    homeworkTheadArray.add(thead);
+                }
+                for (String thead : homeworkElement.getRecords()) {
+                    homeworkRecordArray.add(thead);
+                }
+                homeworkObject.put("thead", homeworkTheadArray);
+                homeworkObject.put("record", homeworkRecordArray);
+                subjectObject.put("homework", homeworkObject);
+                //stringBuilder.append("<br>");
                 //Elements courseOutputsElements = courseOutputsDocument.select("div.form_table").select("table.tbl_type").select("tbody");
                 //stringBuilder.append("수업활동일지");
                 //stringBuilder.append("<br>");
@@ -218,39 +242,39 @@ public class Crawler {
                 //stringBuilder.append(TableMaker.makeTable(courseTeamProjectStudentElements));
                 //stringBuilder.append("<br>");
                 Elements courseReferenceElements = courseReferenceDocument.select("div.form_table").select("table.tbl_type").select("tbody");
-                stringBuilder.append("강의자료");
-                stringBuilder.append("<br>");
-                stringBuilder.append(tableMaker.makeTable(courseReferenceElements, 3));
-                stringBuilder.append("<br>");
-                nth++;
+                JSONObject courseReferenceObject = new JSONObject();
+                JSONArray courseReferenceThead = new JSONArray();
+                JSONArray courseReferenceRecords = new JSONArray();
+
+                TableElement courseReferenceElement = tableMaker.makeTable(courseReferenceElements, 3);
+                for (String thead : courseReferenceElement.gettHeads()) {
+                    courseReferenceThead.add(thead);
+                }
+                for (String thead : courseReferenceElement.getRecords()) {
+                    courseReferenceRecords.add(thead);
+                }
+                courseReferenceObject.put("thead", courseReferenceThead);
+                courseReferenceObject.put("record", courseReferenceRecords);
+                subjectObject.put("reference", courseReferenceObject);
+                resultArray.add(subjectObject);
             }
-            stringBuilder.append("<p style=\"color:red\">");
-            stringBuilder.append(tableMaker.getCount());
-            stringBuilder.append("</p>");
-            stringBuilder.append(tableMaker.getGonjiList());
-        } catch (IllegalArgumentException ex) {
-            stringBuilder = new StringBuilder("<h1>아이디랑 비번이 틀린 것 같습니다. 확인해보세요.</h1>");
-            stringBuilder.append("<br>");
-            stringBuilder.append("5초 후 자동으로 메인화면으로 돌아갑니다...");
-            stringBuilder.append("<br>");
-            stringBuilder.append("<a href=\"javascript:history.back();\">뒤로가기</a>");
-            stringBuilder.append("<script type=\"text/javascript\">\n" +
-                    "    function goBack() {\n" +
-                    "        setTimeout(function() {\n" +
-                    "            window.history.back();\n" +
-                    "        }, 5000);\n" +
-                    "    };\n" +
-                    "goBack();" +
-                    "</script>");
-            success = false;
+        } catch (IllegalArgumentException ignored) {
+
         } catch (Exception e) {
             System.err.println(new java.util.Date().toString() + " " + e.getMessage());
             start();
         }
+
     }
 
-    public StringBuilder getStringBuilder() {
-        return stringBuilder;
+    public JSONObject getResult() {
+        JSONObject result = new JSONObject();
+        if (success) {
+            result.put("result", resultArray);
+        } else {
+            result.put("result", "failed");
+        }
+        return result;
     }
 
     public Map<String, String> getCookies() {

@@ -23,17 +23,20 @@ public class ResultPageMaker {
     public ResultPageMaker(String url, Cookie[] cookies) {
         this.url = url;
         Arrays.stream(cookies).forEach(cookie -> this.cookies.put(cookie.getName(), cookie.getValue()));
-
     }
 
     private void getType(Document document) {
         String text = document.select("li#CurrentMenuTitle").text();
-        if (text.equals("공지사항")) {
-            type = Gongji;
-        } else if (text.equals("강의자료")) {
-            type = Subject;
-        } else if (text.equals("과제")) {
-            type = Gwaje;
+        switch (text) {
+            case "공지사항":
+                type = Gongji;
+                break;
+            case "강의자료":
+                type = Subject;
+                break;
+            case "과제":
+                type = Gwaje;
+                break;
         }
     }
 

@@ -16,7 +16,7 @@ public class TableMaker {
 
     }
 
-    public String makeTable(Elements gongJiElements, int what) {
+    public TableElement makeTable(Elements gongJiElements, int what) {
         notYetList.clear();
         Elements headers = gongJiElements.select("th");
         String[] header = new String[headers.size()];
@@ -42,36 +42,26 @@ public class TableMaker {
                 }
             }
         }
-        StringBuilder stringBuilder = new StringBuilder("<br>");
-        stringBuilder.append("<table border=\"1\">");
-        stringBuilder.append("<tr>");
-        for (String head : header) {
-            stringBuilder.append("<th>").append(head).append("</th>");
-        }
-        stringBuilder.append("</tr>");
+
+
+        List<String> recordList = new ArrayList<>();
         for (Object[] content : rows) {
-            stringBuilder.append("<tr>");
             for (int i = 0; i < content.length; i++) {
-                stringBuilder.append("<td>");
                 if (content[i] instanceof Read) {
-                    stringBuilder.append(content[i].toString());
+                    recordList.add(content[i].toString());
                 } else if (content[i] instanceof Links) {
                     Links links = (Links) content[i];
-                    stringBuilder.append("<a href=\"").append(links.getLink()).append("\"").append(" target=\"_blank\"").append(">")
-                            .append(links.getLinkName()).append("</a>");
+                    recordList.add(links.getLink());
                 } else if (content[i] == null) {
-                    continue;
                 } else {
-                    stringBuilder.append(content[i].toString());
+                    recordList.add(content[i].toString());
                     if (content[i].toString().equals("미제출")) {
                         if (content[i + 1].toString().equals(""))
                             notYetList.add(content);
                     }
                 }
 
-                stringBuilder.append("</td>");
             }
-            stringBuilder.append("</tr>");
             if (what == 1) {
                 if (content.length != 0) {
                     Object[] gongjiListTemp = new Object[content.length - 1];
@@ -80,11 +70,8 @@ public class TableMaker {
                 }
             }
         }
-        stringBuilder.append("</table>");
 
-        stringBuilder.append(appendNotYetList());
-        count += notYetList.size();
-        return stringBuilder.toString();
+        return new TableElement(header, recordList.toArray(new String[0]));
     }
 
     private String appendNotYetList() {
