@@ -51,7 +51,7 @@ public class TableMaker {
                     recordList.add(content[i].toString());
                 } else if (content[i] instanceof Links) {
                     Links links = (Links) content[i];
-                    recordList.add(links.getLink());
+                    recordList.add(links.getLinkName()+" LINK "+links.getLink());
                 } else if (content[i] == null) {
                 } else {
                     recordList.add(content[i].toString());

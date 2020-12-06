@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>나의 남은 과제는...</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+            integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script>
+        function submit() {
+            $.ajax({
+                url: "/WebProjecct/crawling.do",
+                method: "POST",
+                success: function (data) {
+                    console.log(data);
+                    let parsedData = JSON.parse(data)["result"];
+                    if (parsedData === "failed") {
+                        //로그인 실패한 것 처리
+                    } else {
+                        let node = document.createElement("div");
+                        let cookies = JSON.parse(data)["cookies"];
+                        for (let i = 0; i < cookies.length; i++) {
+                            $.cookie(cookies[i]["key"],cookies[i]["value"],{ expires: 7, path: '/' });
+                        }
+                        for (let i = 0; i < Object.keys(parsedData).length; i++) {
+                            /////과목명///////
+                            let headingElement = document.createElement("h4");
+                            headingElement.innerText = parsedData[i]["subjectName"];
+                            node.appendChild(headingElement);
+                            /////공지사항//////
+                            let headingElement2 = document.createElement("h4");
+                            headingElement2.innerText = "공지사항";
+                            node.appendChild(headingElement2)
+                            let gongjiElement = parsedData[i]["gongji"];
+                            let gongjiTable = makeTable(gongjiElement);
+                            node.appendChild(gongjiTable);
+                            /////과제///////
+                            let headingElement3 = document.createElement("h4");
+                            headingElement3.innerText = "과제";
+                            node.appendChild(headingElement3);
+                            let homeworkElement = parsedData[i]["homework"];
+                            let homeworkTable = makeTable(homeworkElement);
+                            node.appendChild(homeworkTable);
+                            ///강의자료////
+                            let headingElement4 = document.createElement("h4");
+                            headingElement4.innerText = "강의자료"
+                            node.appendChild(headingElement4)
+                            let reference = parsedData[i]["reference"];
+                            let referenceTable = makeTable(reference);
+                            node.appendChild(referenceTable);
+                        }
+                        const container = document.getElementById("container");
+                        container.appendChild(node);
+                    }
+
+                },
+                beforeSend: function () {
+                    $('div.display-none').removeClass('display-none');
+                }
+                ,
+                complete: function () {
+                    $('.wrap-loading').remove();
+                    $('div.logo-area').remove();
+                    $('img.infinite_rotating_logo').remove();
+                },
+                error: function () {
+                    //실패처리
+                }
+            })
+        }
+
+        function makeTable(parsedData) {
+            let tableNode = document.createElement("table");
+            tableNode.setAttribute("border", "1");
+            let thRecord = document.createElement("tr");
+            for (let j = 0; j < parsedData["thead"].length; j++) {
+                let thElement = document.createElement("th");
+                thElement.innerText = parsedData["thead"][j];
+                console.log(parsedData["thead"][j]);
+                thRecord.appendChild(thElement);
+            }
+            tableNode.appendChild(thRecord);
+            for (let j = 0; j < parsedData["record"].length / parsedData["thead"].length; j++) {
+                let tableRecordElement = document.createElement("tr");
+                for (let k = 0; k < parsedData["thead"].length; k++) {
+                    let tableDataElement = document.createElement("td");
+                    if (parsedData["record"][j * parsedData["thead"].length + k].split(" LINK ").length !== 1) {
+                        let linkElement = document.createElement("a");
+                        linkElement.setAttribute("target","_blank");
+                        linkElement.setAttribute("href", parsedData["record"][j * parsedData["thead"].length + k].split(" LINK ")[1]);
+                        linkElement.innerText = parsedData["record"][j * parsedData["thead"].length + k].split(" LINK ")[0];
+                        tableDataElement.appendChild(linkElement);
+                    } else {
+                        tableDataElement.innerText = parsedData["record"][j * parsedData["thead"].length + k];
+                    }
+                    console.log(parsedData["record"][j * parsedData["thead"].length + k])
+                    tableRecordElement.appendChild(tableDataElement);
+                }
+                tableNode.appendChild(tableRecordElement);
+            }
+
+            console.log(tableNode);
+            return tableNode;
+        }
+
+        submit();
+    </script>
+    <style>
+        img.infinite_rotating_logo {
+            animation: rotate_image 10s linear infinite;
+            transform-origin: 50% 50%;
+        }
+
+        @keyframes rotate_image {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .wrap-loading {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.2);
+            filter: progid:DXImageTransform.Microsoft.Gradient(startColorstr='#20000000', endColorstr='#20000000');
+        }
+
+        .wrap-loading div {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-left: -21px;
+            margin-top: -21px;
+        }
+
+        .display-none {
+            display: none;
+        }
+
+        .logo-area {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+<div class="logo-area wrap-loading">
+    <a href="https://heroesofthestorm.com/ko-kr/" target="_blank"><img src="images/heroes_of_the_storm.png" alt="로딩 화면"
+                                                                       class="infinite_rotating_logo"
+                                                                       rel="noopener noreferrer"></a>
+</div>
+<div id="container">
+
+</div>
+</body>
+</html>
