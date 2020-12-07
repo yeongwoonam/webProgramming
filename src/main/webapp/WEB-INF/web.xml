@@ -8,6 +8,10 @@
         <servlet-name>DeleteAction</servlet-name>
         <servlet-class>cse.web_project.webprojecct.DeleteAction</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Logout</servlet-name>
+        <servlet-class>cse.web_project.webprojecct.Logout</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>WriteAction</servlet-name>
         <url-pattern>/WriteAction.do</url-pattern>
@@ -15,6 +19,10 @@
     <servlet-mapping>
         <servlet-name>DeleteAction</servlet-name>
         <url-pattern>/DeleteAction.do</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Logout</servlet-name>
+        <url-pattern>/Logout.do</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

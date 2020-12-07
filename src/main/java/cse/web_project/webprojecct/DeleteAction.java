@@ -51,7 +51,7 @@ public class DeleteAction extends HttpServlet {
             Class.forName("com.mysql.cj.jdbc.Driver"); // JDBC 드라이버 적재
             conn = DriverManager.getConnection(URL, DBID, DBPWD); // Connection 객체 생성
             String query;
-
+            
             switch (boardType) {
 
                 case "1":
