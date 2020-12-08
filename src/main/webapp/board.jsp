@@ -49,7 +49,14 @@
             <div class="row">
                 <div class="col-xs-12">
                     <div class="page-header" style="text-align:right;">
-                        <h5 onclick="location.href = '#'">Login</h5>
+                        <% if(session.getAttribute("id") != null){%>
+                        <h6 style=" display: inline" ><%=session.getAttribute("id")%> 님 안녕하세요!!!&nbsp; &nbsp;</h6>
+                        <%}%>
+                        <%if(session.getAttribute("id") != null){%>
+                        <h5 style=" display: inline" onclick="window.location='Logout.do'">Logout</h5>
+                        <%}else{%>
+                        <h5 style=" display: inline" onclick="window.location='login.jsp'">Login</h5>
+                        <%}%>
                     </div>
                     <div class="page-header" style="display: inline;">
                         <center><h1 id="navbars" onclick="location.href = 'index.jsp'">Homework Calendar</h1><center>
@@ -72,7 +79,7 @@
                                                     </a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a class="nav-link" id="test" href="#">과제 모아보기</a>
+                                                    <a class="nav-link" id="test" href="crawl.jsp">과제 모아보기</a>
                                                 </li>
                                                 <li class="nav-item" style="background-color: #555555">
                                                     <a class="nav-link" href="board.jsp">질문 게시판</a>
@@ -155,7 +162,9 @@
 
                                                 </tbody>
                                             </table>
+                                            <% if(session.getAttribute("id") != null){%>
                                             <button class="btn btn-secondary my-2 my-sm-0" type="submit" onclick="window.location.href = 'write.jsp?major=1'">글쓰기</button>
+                                            <%}%>
                                         </div>
                                         <br />
                                     </div>
