@@ -36,7 +36,10 @@ public class Logout extends HttpServlet {
             HttpSession session = request.getSession();
             session.invalidate();
             StringBuilder Popup = new StringBuilder();
+            Popup.append("<script>sessionStorage.clear();</script>");
             Popup.append("<script>alert('로그아웃 되었습니다!'); location.href='index.jsp';</script>");
+            
+           
             out.println(Popup.toString());
         }
     }

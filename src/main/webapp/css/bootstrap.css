@@ -10444,10 +10444,10 @@ select.form-control {
 }
 
 [type="checkbox"]:checked::after {
-  content: "x";
+  content: "✔";
   position: absolute;
-  left: -.64em;
-  top: -.48em;
+  left: -.99em;
+  top: -.80em;
   font-size: 1.5rem;
   line-height: .5;
   color: #333;
