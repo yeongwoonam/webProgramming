@@ -10,12 +10,61 @@
 <html lang="ko" id="test">
     <head>
         <meta charset="UTF-8">
+
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="./css/bootstrap.css">
         <title>TeamProject</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://tistory3.daumcdn.net/tistory/941717/skin/images/jquery.min.js" type="text/javascript"></script>
+        <script src="https://tistory3.daumcdn.net/tistory/941717/skin/images/snowfall.jquery.js" type="text/javascript"></script>
+        <script>
+
+            $(document).ready(function () {
+                $(document).snowfall({deviceorientation: true, round: true, minSize: 1, maxSize: 8, flakeCount: 250});
+            });
+
+            $(document).ready(function () {
+                if (sessionStorage.getItem("isLogin") && (!parseInt(sessionStorage.getItem("count")) == 1)) {
+                    sessionStorage.setItem("second", 0);
+                    sessionStorage.setItem("minute", 0);
+                    sessionStorage.setItem("hour", 0);
+                    sessionStorage.setItem("count", 1);
+                    tid = setInterval('count()', 1000); // 타이머 1초간격으로 수행
+                } else if (sessionStorage.getItem("isLogin") && parseInt(sessionStorage.getItem("count")) == 1) {
+                    tid = setInterval('count()', 1000); // 타이머 1초간격으로 수행
+                    console.log("엘스");
+                } else {
+                    console.log(parseInt(sessionStorage.getItem("count")));
+                }
+            });
+
+
+
+            function count() {
+                if (sessionStorage.getItem("hour") == null || sessionStorage.getItem("minute") == null || sessionStorage.getItem("second") == null) {
+                    document.getElementById("checktime").innerHTML = '사이트 이용 시간 : 00 : 00 : 00';
+                    console.log("여기옴!!!");
+                } else {
+                    sessionStorage.setItem("second", sessionStorage.getItem('second'));
+                    sessionStorage.setItem("minute", sessionStorage.getItem('minute'));
+                    sessionStorage.setItem("hour", sessionStorage.getItem('hour'));
+                    document.getElementById("checktime").innerHTML = '사이트 이용 시간 : ' + sessionStorage.getItem("hour") + ' : ' + sessionStorage.getItem("minute") + ' : ' + sessionStorage.getItem("second");
+                    sessionStorage.setItem("second", parseInt(sessionStorage.getItem('second')) + 1);
+                    if (sessionStorage.getItem('second') === "60") {
+                        sessionStorage.setItem("second", 0);
+                        sessionStorage.setItem("minute", parseInt(sessionStorage.getItem('minute')) + 1);
+                    } else if (sessionStorage.getItem('minute') === "60") {
+                        sessionStorage.setItem("minute", 0);
+                        sessionStorage.setItem("hour", parseInt(sessionStorage.getItem('hour')) + 1);
+                    }
+                }
+            }
+
+
+        </script>
+
         <%--
         <%
             session.setAttribute("ID", "20143249");
@@ -49,6 +98,42 @@
 
         <style>
             #topButton {position: fixed; right: 2%; bottom: 50px; display: none; z-index: 999;}
+
+
+            .modal{
+			position: fixed;
+			top: 0; left: 0;
+			width: 100%; height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items : center;
+		}
+		.md_overlay {
+			background-color: rgba(0, 0, 0, 0.6);
+			width: 100%; height: 100%;
+			position: absolute;
+		}
+		.md_content {
+			width: 800px;
+                        height: 400px;
+			position: relative;
+                        text-align: center;
+                        margin: 50px;
+                        padding: 50px;
+
+			background-color: #d1ecf1;
+
+			border-radius: 6px;
+			box-shadow: 0 10px 20px rgba(0,0,0,0.20), 0 6px 6px rgba(0, 0, 0, 0.20);
+		}
+
+            .hidden {
+                display: none;
+            }
+            .modal_text {
+                padding: 16px; 
+                display: inline;
+            }
 
             @font-face {
                 font-family: 'MapoFlowerIsland';
@@ -188,7 +273,7 @@
 
             $(window).scroll(function () {
                 // top button controll
-                if ($(this).scrollTop() > 400) {
+                if ($(this).scrollTop() > 100) {
                     $('#topButton').fadeIn();
                 } else {
                     $('#topButton').fadeOut();
@@ -213,16 +298,28 @@
         <div class="bs-docs-section clearfix">
             <div class="row">
                 <div class="col-xs-12">
-                    
+
                     <div class="page-header" style="text-align:right;">
-                        <% if(session.getAttribute("id") != null){%>
+                        <% if (session.getAttribute("id") != null) {%>
                         <h6 style=" display: inline" ><%=session.getAttribute("id")%> 님 안녕하세요!!!&nbsp; &nbsp;</h6>
                         <%}%>
-                        <%if(session.getAttribute("id") != null){%>
-                        <h5 style=" display: inline" onclick="window.location='Logout.do'">Logout</h5>
-                        <%}else{%>
-                        <h5 style=" display: inline" onclick="window.location='login.jsp'">Login</h5>
+                        <%if (session.getAttribute("id") != null) {%>
+                        <h5 style=" display: inline" onclick="window.location = 'Logout.do'">Logout</h5>
+                        <%} else {%>
+                        <h5 style=" display: inline" onclick="window.location = 'login.jsp'">Login</h5>
                         <%}%>
+                        <br />
+
+                        <script>
+
+                            if (sessionStorage.getItem("isLogin")) {
+                                document.write("<p id='checktime'></p>");
+
+                            } else {
+
+
+                            }
+                        </script>
                     </div>
                     <div class="page-header" style="display: inline;">
                         <center><h1 id="navbars" onclick="location.href = 'index.jsp'">Homework Calendar</h1><center>
@@ -463,7 +560,40 @@
                                 <div class="card">
                                     <center><h2>개발자 공지사항</h2></center>
                                     <hr />
-                                    하이
+                                    <center><p id="open" onclick="openModal()" style=" font-size: 20px"><U>과제 모아보기 기능이 추가되었습니다!</U></p></center>
+                                    <div class="modal hidden">
+                                        <div class="md_overlay"></div>
+                                        <div class="md_content" style=" display: inline">
+                                            <h3>공지사항</h3>
+                                            <div class="modal_text" style=" font-size: 15px">
+                                                <center>- 사용법 -</center><br />
+                                                1. 우측 상단 Login 버튼 클릭<br />
+                                                2. 자신의 DOOR 계정으로 로그인<br />
+                                                3. 과제 모아보기 탭 클릭<br />
+                                            </div><br/><br/><br/><br/><br/><br/>
+                                            <button class="btn btn-secondary my-2 my-sm-0">닫기</button>
+                                        </div>
+                                    </div>
+
+                                    <script type="text/javascript">
+                                        <!--
+                //필요한 엘리먼트들을 선택한다.
+                                        const openButton = document.getElementById("open");
+                                        const modal = document.querySelector(".modal");
+                                        const overlay = modal.querySelector(".md_overlay");
+                                        const closeButton = modal.querySelector("button");
+                                        //동작함수
+                                        const openModal = () => {
+                                            modal.classList.remove("hidden");
+                                        }
+                                        const closeModal = () => {
+                                            modal.classList.add("hidden");
+                                        }
+                                        //클릭 이벤트
+                                        openButton.addEventListener("click", openModal);
+                                        closeButton.addEventListener("click", closeModal);
+                                        //-->
+                                    </script>
 
 
 
